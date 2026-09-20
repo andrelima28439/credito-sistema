@@ -1,0 +1,358 @@
+{
+  "info": {
+    "name": "Credito Sistema",
+    "description": "Fluxo ponta a ponta: login (3 perfis) -> criar -> aprovar -> acesso negado. Importe tambem o environment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "token_cliente",
+      "value": ""
+    },
+    {
+      "key": "token_analista",
+      "value": ""
+    },
+    {
+      "key": "token_gerente",
+      "value": ""
+    },
+    {
+      "key": "solicitacao_id_baixo",
+      "value": ""
+    },
+    {
+      "key": "solicitacao_id_alto",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Login",
+      "item": [
+        {
+          "name": "Login CLIENTE",
+          "request": {
+            "method": "POST",
+            "url": "{{keycloak_url}}/realms/credito-sistema/protocol/openid-connect/token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}"
+                },
+                {
+                  "key": "username",
+                  "value": "{{user_cliente}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{pass_cliente}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('login cliente 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('tem access_token', function () { pm.expect(json.access_token).to.be.a('string'); });",
+                  "pm.collectionVariables.set('token_cliente', json.access_token); try { pm.environment.set('token_cliente', json.access_token); } catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login ANALISTA",
+          "request": {
+            "method": "POST",
+            "url": "{{keycloak_url}}/realms/credito-sistema/protocol/openid-connect/token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}"
+                },
+                {
+                  "key": "username",
+                  "value": "{{user_analista}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{pass_analista}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('login analista 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('tem access_token', function () { pm.expect(json.access_token).to.be.a('string'); });",
+                  "pm.collectionVariables.set('token_analista', json.access_token); try { pm.environment.set('token_analista', json.access_token); } catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login GERENTE",
+          "request": {
+            "method": "POST",
+            "url": "{{keycloak_url}}/realms/credito-sistema/protocol/openid-connect/token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}"
+                },
+                {
+                  "key": "username",
+                  "value": "{{user_gerente}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{pass_gerente}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('login gerente 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('tem access_token', function () { pm.expect(json.access_token).to.be.a('string'); });",
+                  "pm.collectionVariables.set('token_gerente', json.access_token); try { pm.environment.set('token_gerente', json.access_token); } catch (e) {}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Cliente cria solicitacao",
+      "item": [
+        {
+          "name": "Criar solicitacao R$ 5000",
+          "request": {
+            "method": "POST",
+            "url": "{{solicitacao_url}}/solicitacoes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"valor\": 5000}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('criada 201', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.test('status PENDENTE', function () { pm.expect(json.status).to.eql('PENDENTE'); });",
+                  "pm.collectionVariables.set('solicitacao_id_baixo', json.id); try { pm.environment.set('solicitacao_id_baixo', json.id); } catch (e) {}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Analista aprova (valor baixo)",
+      "item": [
+        {
+          "name": "Aprovar solicitacao de R$ 5000",
+          "request": {
+            "method": "PATCH",
+            "url": "{{solicitacao_url}}/solicitacoes/{{solicitacao_id_baixo}}/aprovar",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_analista}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('aprovada 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status APROVADA', function () { pm.expect(pm.response.json().status).to.eql('APROVADA'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Gerente aprova (valor alto)",
+      "item": [
+        {
+          "name": "Criar solicitacao R$ 15000",
+          "request": {
+            "method": "POST",
+            "url": "{{solicitacao_url}}/solicitacoes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"valor\": 15000}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('criada 201', function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set('solicitacao_id_alto', pm.response.json().id); try { pm.environment.set('solicitacao_id_alto', pm.response.json().id); } catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gerente aprova R$ 15000",
+          "request": {
+            "method": "PATCH",
+            "url": "{{solicitacao_url}}/solicitacoes/{{solicitacao_id_alto}}/aprovar",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_gerente}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('aprovada 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status APROVADA', function () { pm.expect(pm.response.json().status).to.eql('APROVADA'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Tentativa de acesso negado",
+      "item": [
+        {
+          "name": "Cliente tentando aprovar",
+          "request": {
+            "method": "PATCH",
+            "url": "{{solicitacao_url}}/solicitacoes/{{solicitacao_id_baixo}}/aprovar",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_cliente}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('acesso negado 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

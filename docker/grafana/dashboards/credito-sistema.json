@@ -1,0 +1,34 @@
+{
+  "uid": "credito-sistema",
+  "title": "Credito Sistema",
+  "tags": ["credito"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Solicitacoes decididas (total por status)",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "sum by (status) (solicitacoes_decididas_total)" }],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+    },
+    {
+      "id": 2,
+      "title": "HTTP requests/s por endpoint",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "sum by (uri) (rate(http_server_requests_seconds_count[1m]))" }],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+    },
+    {
+      "id": 3,
+      "title": "Memoria heap JVM",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "jvm_memory_used_bytes{area=\"heap\"}" }],
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 }
+    }
+  ]
+}

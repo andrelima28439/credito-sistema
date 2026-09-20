@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build e testes (inclui integracao com Testcontainers)
+        run: mvn -B verify
+
+      - name: Lint/format (Spotless)
+        run: mvn -B spotless:check
+
+      - name: Relatorio de cobertura (JaCoCo)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-reports
+          path: "**/target/site/jacoco"

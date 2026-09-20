@@ -1,0 +1,11 @@
+<configuration>
+  <springProperty name="APP" source="spring.application.name" defaultValue="credito"/>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"servico":"${APP}"}</customFields>
+    </encoder>
+  </appender>
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>

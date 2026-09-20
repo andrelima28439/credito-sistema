@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  - job_name: "solicitacao-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:8081"]
+  - job_name: "notificacao-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:8082"]
+  - job_name: "relatorio-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:8083"]

@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS notificacao (
+  id UUID PRIMARY KEY,
+  status VARCHAR(20) NOT NULL,
+  valor NUMERIC(15, 2) NOT NULL,
+  data_envio TIMESTAMPTZ NOT NULL
+);

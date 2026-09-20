@@ -1,0 +1,33 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: relatorio-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/relatorio_db
+    username: postgres
+    password: postgres
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+
+app:
+  datasource:
+    solicitacao:
+      url: jdbc:postgresql://localhost:5432/solicitacao_db
+      username: postgres
+      password: postgres
+  relatorio:
+    diretorio: ./relatorios
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,prometheus
+  endpoint:
+    health:
+      show-details: always
